@@ -1,0 +1,32 @@
+[package]
+name = "cascade"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.62"
+default-run = "cascade"
+
+[dependencies]
+cascade-interface = { path = "./interface" }
+cascade-kernel = { path = "./kernel" }
+
+[workspace]
+members = ["kernel", "bridge", "interface"]
+
+[profile.release-lto]
+inherits = "release"
+lto = true
+codegen-units = 1
+
+# A profile which compiles all (non-workspace) dependencies in release mode
+# but Lapce code in dev mode. This gives a good debugging experience for your
+# code and fast performance of other people's code. After the initial
+# build subsequent ones are as fast as dev mode builds.
+# See https://doc.rust-lang.org/cargo/reference/profiles.html
+# To use this profile:
+#   cargo build --profile fastdev
+#   cargo run --profile fastdev --bin cascade
+[profile.fastdev.package."*"]
+opt-level = 3
+
+[profile.fastdev]
+inherits = "dev"
